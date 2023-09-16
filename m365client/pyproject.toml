@@ -1,0 +1,30 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools>=61.0",
+  "setuptools-scm",
+  "pytest",
+]
+
+[project]
+description = "Client for M365 Server"
+name = "m365client"
+version = "0.1"
+dynamic = ["dependencies", "optional-dependencies"]
+
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["./requirements/requirements.txt"] }
+optional-dependencies.test = { file = ["./requirements/requirements-test.txt"] }
+optional-dependencies.dev = { file = ["./requirements/requirements-dev.txt"]}
+
+[tool.setuptools.packages.find]
+include = ["m365client"]  # package names should match these glob patterns (["*"] by default)
+exclude = []  # exclude packages matching these glob patterns (empty by default)
+
+
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "m365client",
+]

@@ -1,0 +1,42 @@
+########################################## Required
+# These environment variables are required for core functionality of the app
+#######
+# Azure Tenant ID
+TENANT_ID=
+AZURE_ENDPOINT_SUFFIX=core.windows.net
+AZURE_SUBSCRIPTION_ID=
+AUTHORITY_ENDPOINT=https://login.microsoftonline.com/#yourtenantid
+
+## Azure Blob Storage Gen2 Warehouse 
+STORAGE_ACCOUNT_KEY=
+STORAGE_ACCOUNT_NAME=
+
+## M365 Server 
+API_SERVER_BASE_URL=http://m365-server:17200/api/v1
+NOTEBOOK_API_SERVER_BASE_URL=http://localhost:17200/api/v1
+
+########################################## Optional 
+# These environment variables are required for experimental portions of the app
+#####################
+# Pipeline
+PIPELINE_CLIENT_ID=
+PIPELINE_CLIENT_SECRET=
+PIPELINE_CLIENT_SECRET_ID=
+PIPELINE_THUMBPRINT=
+
+### Sharepoint 
+SHAREPOINT_CLIENT_ID=
+SHAREPOINT_CLIENT_SECRET=
+SHAREPOINT_BASE_URL=
+
+# GRAPH
+DEFAULT_GRAPH_SCOPE=https://graph.microsoft.com/.default
+GRAPH_API_BASE=https://graph.microsoft.com/v1.0
+
+# POWER BI
+POWER_BI_SCOPE=https://analysis.windows.net/powerbi/api/.default
+POWER_BI_API_BASE=https://analysis.windows.net/powerbi/api
+
+GMAIL_API_KEY=
+GOOGLE_PIPELINE_CLIENT_ID=
+GOOGLE_PIPELINE_CLIENT_SECRET=

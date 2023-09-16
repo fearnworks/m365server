@@ -1,0 +1,8 @@
+pandas~=2.0.0
+pyarrow==12.0.0
+debugpy
+loguru
+httpx
+python-dotenv
+requests
+msal
