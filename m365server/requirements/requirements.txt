@@ -30,15 +30,11 @@ charset-normalizer==3.2.0
     # via requests
 click==8.1.7
     # via uvicorn
-contourpy==1.1.1
-    # via matplotlib
 cryptography==41.0.3
     # via
     #   azure-storage-blob
     #   msal
     #   pyjwt
-cycler==0.11.0
-    # via matplotlib
 debugpy==1.8.0
     # via -r requirements/requirements.in
 et-xmlfile==1.1.0
@@ -47,8 +43,6 @@ exceptiongroup==1.1.3
     # via anyio
 fastapi==0.103.1
     # via -r requirements/requirements.in
-fonttools==4.42.1
-    # via matplotlib
 greenlet==2.0.2
     # via sqlalchemy
 h11==0.14.0
@@ -66,29 +60,21 @@ idna==3.4
     #   requests
 isodate==0.6.1
     # via azure-storage-blob
-kiwisolver==1.4.5
-    # via matplotlib
 loguru==0.7.2
     # via -r requirements/requirements.in
-matplotlib==3.8.0
+lxml==4.9.3
     # via -r requirements/requirements.in
 msal==1.24.0
     # via -r requirements/requirements.in
 numpy==1.25.2
     # via
     #   -r requirements/requirements.in
-    #   contourpy
-    #   matplotlib
     #   pandas
     #   pyarrow
 openpyxl==3.1.2
     # via -r requirements/requirements.in
-packaging==23.1
-    # via matplotlib
 pandas==2.1.0
     # via -r requirements/requirements.in
-pillow==10.0.1
-    # via matplotlib
 pyarrow==13.0.0
     # via -r requirements/requirements.in
 pycparser==2.21
@@ -99,12 +85,8 @@ pydantic-core==2.6.3
     # via pydantic
 pyjwt[crypto]==2.8.0
     # via msal
-pyparsing==3.1.1
-    # via matplotlib
 python-dateutil==2.8.2
-    # via
-    #   matplotlib
-    #   pandas
+    # via pandas
 python-dotenv==1.0.0
     # via -r requirements/requirements.in
 python-multipart==0.0.6

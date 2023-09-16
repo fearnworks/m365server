@@ -18,3 +18,4 @@ xlsxwriter
 python-multipart
 msal
 httpx
+lxml
