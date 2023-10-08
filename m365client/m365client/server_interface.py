@@ -19,6 +19,16 @@ class StorageConfig:
     blob_name: str
 
 
+def list_containers(base_url: str) -> dict[str, List[str]]:
+    """
+    Lists all containers in Azure Blob Storage.
+    """
+    # Send the request to get the containers using httpx
+    response = httpx.get(f"{base_url}/blob_storage/list_containers")
+    containers = response.json().get("containers", [])
+
+    return {"containers": containers}
+
 def list_blobs(
     base_url: str, container_name: str, path_filter: str | None = None
 ) -> dict[str, List[str]]:
