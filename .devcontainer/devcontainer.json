@@ -44,8 +44,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "/bin/bash ${localEnv:HOME}${localEnv:USERPROFILE}/scripts/setup_env.sh",
-
+	"postCreateCommand": "/bin/bash -c '/workspaces/m365server/scripts/setup_dev.sh && source /workspaces/m365server/venv/bin/activate'",	
 	// Configure tool-specific properties.
 	// "customizations": {},
 

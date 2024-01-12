@@ -1,8 +1,15 @@
-python3 -m venv venv 
+if [ ! -d "venv" ]; then
+  python3 -m venv venv 
+fi
+
 source ./venv/bin/activate
 python3 -m pip install pip --upgrade 
 pip install -e ./m365server --upgrade
 pip install -e ./m365client --upgrade
 bash ./scripts/run_tests.sh
-docker network create hq-network
+
+if [ -z "$(docker network ls | grep hq-network)" ]; then
+  docker network create hq-network
+fi
+
 docker compose up --build 

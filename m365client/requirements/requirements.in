@@ -1,5 +1,5 @@
-pandas~=2.0.0
-pyarrow==12.0.0
+pandas
+pyarrow
 debugpy
 loguru
 httpx
