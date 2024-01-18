@@ -6,7 +6,7 @@ from loguru import logger
 class ServicePrincipalConfig:
     client_id: str
     client_secret: str
-    tenant_id: str
+    AZURE_TENANT_ID: str
 
 @dataclass
 class AzureBlobStorageConfig:
@@ -30,12 +30,12 @@ def get_default_config() -> AzureBlobStorageConfig:
     azure_suffix: str = os.getenv('AZURE_ENDPOINT_SUFFIX')
 
     # Check if service principal environment variables are set
-    if all([os.getenv("AZURE_CLIENT_ID"), os.getenv("AZURE_CLIENT_SECRET"), os.getenv("TENANT_ID")]):
+    if all([os.getenv("AZURE_CLIENT_ID"), os.getenv("AZURE_CLIENT_SECRET"), os.getenv("AZURE_TENANT_ID")]):
         logger.info("Using service principal for authentication")
         service_principal_config = ServicePrincipalConfig(
             client_id=os.getenv("AZURE_CLIENT_ID"),
             client_secret=os.getenv("AZURE_CLIENT_SECRET"),
-            tenant_id=os.getenv("TENANT_ID")
+            AZURE_TENANT_ID=os.getenv("AZURE_TENANT_ID")
         )
         return AzureBlobStorageConfig(
             storage_account_key=storage_account_key,

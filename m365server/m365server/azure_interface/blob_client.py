@@ -2,7 +2,7 @@
 from m365server.azure_interface.configuration import AzureBlobStorageConfig, ServicePrincipalConfig
 from azure.storage.blob import BlobServiceClient, ContainerClient
 from azure.identity import ClientSecretCredential
-
+from loguru import logger
 
 class BlobServiceClientFactory:
     @staticmethod
@@ -32,14 +32,17 @@ class BlobServiceClientFactory:
         Returns:
             BlobServiceClient: The client to interact with Azure Blob Storage.
         """
+        logger.info("Creating client with service principal credentials")
         credential = ClientSecretCredential(
-            tenant_id=config.service_principal_config.tenant_id,
+            AZURE_TENANT_ID=config.service_principal_config.AZURE_TENANT_ID,
             client_id=config.service_principal_config.client_id,
             client_secret=config.service_principal_config.client_secret
         )
         account_url = f"https://{config.storage_account_name}.{config.storage_account_suffix}"
-        return BlobServiceClient(account_url=account_url, credential=credential)
-
+        client = BlobServiceClient(account_url=account_url, credential=credential)
+        logger.info("Successfully created client with service principal credentials")
+        return client
+    
     @staticmethod
     def _create_client_with_connection_string(config: AzureBlobStorageConfig) -> BlobServiceClient:
         """
@@ -51,5 +54,6 @@ class BlobServiceClientFactory:
         Returns:
             BlobServiceClient: The client to interact with Azure Blob Storage.
         """
+        logger.info("Creating client with user credentials")
         connection_string = f"DefaultEndpointsProtocol=https;AccountName={config.storage_account_name};AccountKey={config.storage_account_key};EndpointSuffix={config.storage_account_suffix}"
         return BlobServiceClient.from_connection_string(connection_string)

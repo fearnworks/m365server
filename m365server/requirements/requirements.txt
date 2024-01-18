@@ -13,12 +13,19 @@ anyio==4.2.0
     #   starlette
 async-timeout==4.0.3
     # via redis
+azure-common==1.1.28
+    # via azure-mgmt-network
 azure-core==1.29.6
     # via
     #   -r requirements/requirements.in
     #   azure-identity
+    #   azure-mgmt-core
     #   azure-storage-blob
 azure-identity==1.15.0
+    # via -r requirements/requirements.in
+azure-mgmt-core==1.4.0
+    # via azure-mgmt-network
+azure-mgmt-network==25.2.0
     # via -r requirements/requirements.in
 azure-storage-blob==12.19.0
     # via -r requirements/requirements.in
@@ -63,7 +70,9 @@ idna==3.6
     #   httpx
     #   requests
 isodate==0.6.1
-    # via azure-storage-blob
+    # via
+    #   azure-mgmt-network
+    #   azure-storage-blob
 loguru==0.7.2
     # via -r requirements/requirements.in
 lxml==5.1.0

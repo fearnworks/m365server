@@ -2,7 +2,7 @@
 # These environment variables are required for core functionality of the app
 #######
 # Azure Tenant ID
-TENANT_ID=
+AZURE_TENANT_ID=
 AZURE_ENDPOINT_SUFFIX=core.windows.net
 AZURE_SUBSCRIPTION_ID=
 AUTHORITY_ENDPOINT=https://login.microsoftonline.com/#yourtenantid
