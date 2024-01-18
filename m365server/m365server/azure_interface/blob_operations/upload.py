@@ -1,4 +1,5 @@
 from m365server.azure_interface.blob_operations import IBlobUploadStrategy
+import azure
 from azure.storage.blob import ContainerClient
 from typing import Union
 from io import BytesIO

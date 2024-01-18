@@ -6,7 +6,7 @@ from loguru import logger
 class ServicePrincipalConfig:
     client_id: str
     client_secret: str
-    AZURE_TENANT_ID: str
+    tenant_id: str
 
 @dataclass
 class AzureBlobStorageConfig:
@@ -35,8 +35,9 @@ def get_default_config() -> AzureBlobStorageConfig:
         service_principal_config = ServicePrincipalConfig(
             client_id=os.getenv("AZURE_CLIENT_ID"),
             client_secret=os.getenv("AZURE_CLIENT_SECRET"),
-            AZURE_TENANT_ID=os.getenv("AZURE_TENANT_ID")
+            tenant_id=os.getenv("AZURE_TENANT_ID")
         )
+        
         return AzureBlobStorageConfig(
             storage_account_key=storage_account_key,
             storage_account_name=storage_account_name,
