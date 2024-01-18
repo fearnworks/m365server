@@ -19,10 +19,8 @@ NOTEBOOK_API_SERVER_BASE_URL=http://localhost:17200/api/v1
 # These environment variables are required for experimental portions of the app
 #####################
 # Pipeline
-PIPELINE_CLIENT_ID=
-PIPELINE_CLIENT_SECRET=
-PIPELINE_CLIENT_SECRET_ID=
-PIPELINE_THUMBPRINT=
+AZURE_CLIENT_ID=
+AZURE_CLIENT_SECRET=
 
 ### Sharepoint 
 SHAREPOINT_CLIENT_ID=
