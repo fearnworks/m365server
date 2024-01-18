@@ -9,6 +9,7 @@ from azure.identity import ClientSecretCredential
 
 from m365server.azure_interface.configuration import AzureBlobStorageConfig, ServicePrincipalConfig
 from m365server.azure_interface.blob_client import BlobServiceClientFactory
+import m365server.azure_interface.blob_operations as BlobOperations
 
 class AzureBlobStorageManager:
     """
@@ -38,146 +39,72 @@ class AzureBlobStorageManager:
         }
         logger.info(f"Container clients initialized")
 
+        self.upload_strategy = BlobOperations.BlobUploadStrategy()
+        self.download_strategy = BlobOperations.BlobDownloadStrategy()
+        self.delete_strategy = BlobOperations.BlobDeleteStrategy()
 
-    def _build_connection_string(self, config: AzureBlobStorageConfig) -> str:
-        """
-        Builds the connection string for Azure Blob Storage.
 
-        Args:
-            config (AzureBlobStorageConfig): The storage configuration.
+    # def _build_connection_string(self, config: AzureBlobStorageConfig) -> str:
+    #     """
+    #     Builds the connection string for Azure Blob Storage.
 
-        Returns:
-            str: The connection string.
-        """
-        # Handle cases where service principal is used
-        if config.service_principal_config:
-            return f"https://{config.storage_account_name}.{config.storage_account_suffix}"
+    #     Args:
+    #         config (AzureBlobStorageConfig): The storage configuration.
+
+    #     Returns:
+    #         str: The connection string.
+    #     """
+    #     # Handle cases where service principal is used
+    #     if config.service_principal_config:
+    #         return f"https://{config.storage_account_name}.{config.storage_account_suffix}"
         
-        # Handle key-based authentication
-        return f"DefaultEndpointsProtocol=https;AccountName={config.storage_account_name};AccountKey={config.storage_account_key};EndpointSuffix={config.storage_account_suffix}"
+    #     # Handle key-based authentication
+    #     return f"DefaultEndpointsProtocol=https;AccountName={config.storage_account_name};AccountKey={config.storage_account_key};EndpointSuffix={config.storage_account_suffix}"
 
 
-    def _use_service_principal(self, sp_config: ServicePrincipalConfig) -> BlobServiceClient:
-        """
-        Authenticate using a service principal and create a BlobServiceClient.
+    # def _use_service_principal(self, sp_config: ServicePrincipalConfig) -> BlobServiceClient:
+    #     """
+    #     Authenticate using a service principal and create a BlobServiceClient.
 
-        Args:
-            sp_config (ServicePrincipalConfig): The service principal configuration.
+    #     Args:
+    #         sp_config (ServicePrincipalConfig): The service principal configuration.
 
-        Returns:
-            BlobServiceClient: A client authenticated with the service principal.
-        """
-        credential = ClientSecretCredential(
-            tenant_id=sp_config.tenant_id,
-            client_id=sp_config.client_id,
-            client_secret=sp_config.client_secret
-        )
-        blob_service_client = BlobServiceClient(
-            account_url=f"https://{sp_config.storage_account_name}.{sp_config.storage_account_suffix}",
-            credential=credential
-        )
-        return blob_service_client
+    #     Returns:
+    #         BlobServiceClient: A client authenticated with the service principal.
+    #     """
+    #     credential = ClientSecretCredential(
+    #         tenant_id=sp_config.tenant_id,
+    #         client_id=sp_config.client_id,
+    #         client_secret=sp_config.client_secret
+    #     )
+    #     blob_service_client = BlobServiceClient(
+    #         account_url=f"https://{sp_config.storage_account_name}.{sp_config.storage_account_suffix}",
+    #         credential=credential
+    #     )
+    #     return blob_service_client
     
-    def _validate_config(self, config: AzureBlobStorageConfig):
-        if config.service_principal_config:
-            if not all([config.service_principal_config.client_id, config.service_principal_config.client_secret, config.service_principal_config.tenant_id]):
-                raise ValueError("Incomplete service principal configuration")
-        elif not config.storage_account_key:
-            raise ValueError("Storage account key is required for key-based authentication")
+    # def _validate_config(self, config: AzureBlobStorageConfig):
+    #     if config.service_principal_config:
+    #         if not all([config.service_principal_config.client_id, config.service_principal_config.client_secret, config.service_principal_config.tenant_id]):
+    #             raise ValueError("Incomplete service principal configuration")
+    #     elif not config.storage_account_key:
+    #         raise ValueError("Storage account key is required for key-based authentication")
 
-    def _build_account_url(self, config: AzureBlobStorageConfig) -> str:
-        return f"https://{config.storage_account_name}.{config.storage_account_suffix}"
+    # def _build_account_url(self, config: AzureBlobStorageConfig) -> str:
+    #     return f"https://{config.storage_account_name}.{config.storage_account_suffix}"
 
         
-    def upload_blob(self, container_name: str, blob_name: str, file_data: Union[str, BytesIO]) -> None:
-        """
-        Uploads data to a blob in a specified container.
-        
-        This function supports uploading data either from a file path or a BytesIO object.
-        
-        Args:
-            container_name (str): The name of the container where the blob will be uploaded.
-            blob_name (str): The name of the blob to upload the data to.
-            file_data (Union[str, BytesIO]): The data to be uploaded. If a string is provided, 
-                                            it is assumed to be a file path. If a BytesIO object is provided, 
-                                            the data is uploaded directly.
-        """
-        upload_response = None  # Initialize upload_response
+    def upload_blob(self, container_name: str, blob_name: str, file_data: Union[str, BytesIO]):
         container_client = self.container_clients.get(container_name)
-        logger.info(f"Uploading data to blob '{blob_name}' in container '{container_name}'")
-        if container_client:
-            try:
-                if isinstance(file_data, str):
-                    logger.info(f"Detected file data as string, attempting to open file at path: {file_data}")
-                    with open(file_data, "rb") as file:
-                        upload_response = container_client.upload_blob(name=blob_name, data=file, overwrite=True)
-                elif isinstance(file_data, BytesIO):
-                    logger.info(f"Detected file data as BytesIO, uploading directly.")
-                    upload_response = container_client.upload_blob(name=blob_name, data=file_data.getvalue(), overwrite=True)
-                else:
-                    logger.error(f"Unsupported data type for file_data: {type(file_data).__name__}")
-                    return
+        self.upload_strategy.upload_blob(container_client, blob_name, file_data)
 
-                logger.info(f"Finished uploading data to blob '{blob_name}'")
-                # Check if the blob was successfully uploaded
-                blob_client = container_client.get_blob_client(blob_name)
-                if blob_client.exists():
-                    logger.info(f"Successfully uploaded data to blob '{blob_name}'")
-                else:
-                    logger.error(f"Failed to upload data to blob '{blob_name}', blob does not exist after upload attempt.")
-            except Exception as ex:
-                logger.error(f"Failed to upload data to blob '{blob_name}' - Type: {type(ex).__name__}, Message: {str(ex)}")
-                logger.error(f"Upload response: {upload_response}")
-        else:
-            logger.error(f"Container '{container_name}' not found")
-
-
-                    
-    def download_blob(self, container_name: str, blob_name: str, container_clients: Optional[Dict[str, ContainerClient]] = None) -> bytes:
-        """
-        Downloads data from a blob and returns it as bytes.
-
-        Args:
-            container_name (str): The name of the container where the blob is located.
-            blob_name (str): The name of the blob to download the data from.
-
-        Returns:
-            bytes: The blob data.
-        """
-        if container_clients is None:
-            container_clients = self.container_clients
-        container_client = container_clients.get(container_name)
-        if container_client:
-            logger.info(f'Downloading blob {blob_name} from {container_name}')
-            blob_client = container_client.get_blob_client(blob_name)
-            try:
-                blob_data = blob_client.download_blob()
-            except ResourceNotFoundError:
-                error_message = f"Blob '{blob_name}' not found in container '{container_name}'."
-                logger.error(error_message)
-                raise ResourceNotFoundError(status_code=404, detail=error_message)
-            return blob_data.content_as_bytes()
-        else:
-            error_message = f"Container '{container_name}' not found."
-            logger.error(error_message)
-            raise ValueError(error_message)
-
-
-    def delete_blob(self, container_name: str, blob_name: str) -> None:
-        """
-        Deletes a blob from a specified container.
-        
-        Args:
-            container_name (str): The name of the container where the blob is located.
-            blob_name (str): The name of the blob to be deleted.
-        """
+    def download_blob(self, container_name: str, blob_name: str) -> bytes:
         container_client = self.container_clients.get(container_name)
-        if container_client:
-            logger.info(f'Deleting blob "{blob_name}"')
-            container_client.delete_blob(blob_name)
-            logger.info(f'Successfully deleted blob "{blob_name}"')
-        else:
-            logger.error(f"Container '{container_name}' not found")
+        return self.download_strategy.download_blob(container_client, blob_name)
+
+    def delete_blob(self, container_name: str, blob_name: str):
+        container_client = self.container_clients.get(container_name)
+        self.delete_strategy.delete_blob(container_client, blob_name)
 
 
     def list_blobs(self, container_name: str) -> List[str]:
