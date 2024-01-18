@@ -1,3 +1,4 @@
-from .azure_blob_storage_manager import AzureBlobStorageManager, get_default_config
-from .blob_data_loader import BlobDataLoader
-from .endpoints import router
+from m365server.azure_interface.azure_blob_storage_manager import AzureBlobStorageManager
+from m365server.azure_interface.configuration import  get_default_config
+from m365server.azure_interface.blob_data_loader import BlobDataLoader
+from m365server.azure_interface.endpoints import router
