@@ -10,7 +10,6 @@ requests
 tomlkit
 azure-core
 azure-storage-blob
-azure-mgmt-network
 azure-identity
 numpy
 pandas
