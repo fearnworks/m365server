@@ -6,13 +6,24 @@ import m365server.azure_interface as AzureInterface
 import pandas as pd
 from azure.core.exceptions import ResourceNotFoundError
 from azure.storage.blob import BlobServiceClient, ContainerClient
-from dataclasses import dataclass
+from azure.identity import ClientSecretCredential
+
+from dataclasses import dataclass, field
+
+@dataclass
+class ServicePrincipalConfig:
+    client_id: str
+    client_secret: str
+    tenant_id: str
 
 @dataclass
 class AzureBlobStorageConfig:
     storage_account_key: str
     storage_account_name: str
     storage_account_suffix: str = "core.windows.net"
+    service_principal_config: Optional[ServicePrincipalConfig] = field(default=None)
+
+
 
 def get_default_config()-> AzureBlobStorageConfig:
         storage_account_key: str = os.getenv("STORAGE_ACCOUNT_KEY")
@@ -21,20 +32,6 @@ def get_default_config()-> AzureBlobStorageConfig:
         config = AzureBlobStorageConfig(storage_account_key=storage_account_key, storage_account_name=storage_account_name, storage_account_suffix=azure_suffix)
         return config
 
-def build_connection_string(storage_account: str, storage_key: str, suffix: str) -> str:
-        """
-        Builds the connection string used to connect to Azure Blob Storage.
-
-        Args:
-            storage_account (str): The name of the storage account.
-            storage_key (str): The access key for the storage account.
-            suffix (str, optional): The endpoint suffix for the storage account. 
-
-        Returns:
-            str: The connection string.
-        """
-        conn_string = f"DefaultEndpointsProtocol=https;AccountName={storage_account};AccountKey={storage_key}==;EndpointSuffix={suffix}"
-        return conn_string
 
 
 class AzureBlobStorageManager:
@@ -52,18 +49,17 @@ class AzureBlobStorageManager:
     """
 
     def __init__(self, config: AzureBlobStorageConfig) -> None:
-        """
-        Initialize the AzureBlobStorageManager and read environment variables.
-        """
-        # Set up the logger
-        # Load environment variables from .env file
-        logger.info("Init AzureBlobStorageManager")
-        self.connection_string: str = build_connection_string(config.storage_account_name,config.storage_account_key,config.storage_account_suffix)
-        # Initialize BlobServiceClient
-        self.blob_service_client: BlobServiceClient = (
-            BlobServiceClient.from_connection_string(self.connection_string)
-        )
+        logger.info("Initializing AzureBlobStorageManager")
+        if not (config.storage_account_key or config.service_principal_config):
+            raise ValueError("Either storage account key or service principal configuration must be provided")
 
+        if config.service_principal_config:
+            self.blob_service_client = self._use_service_principal(config.service_principal_config)
+        else:
+            self.connection_string = self._build_connection_string(config)
+            self.blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
+
+        # Remaining initialization logic remains unchanged...
         # Dynamically pull the list of container names from the storage account
         self.container_names: List[str] = [
             container.name for container in self.blob_service_client.list_containers()
@@ -75,6 +71,56 @@ class AzureBlobStorageManager:
             for container_name in self.container_names
         }
         logger.info(self.container_clients)
+
+    def _build_connection_string(self, config: AzureBlobStorageConfig) -> str:
+        """
+        Builds the connection string for Azure Blob Storage.
+
+        Args:
+            config (AzureBlobStorageConfig): The storage configuration.
+
+        Returns:
+            str: The connection string.
+        """
+        # Handle cases where service principal is used
+        if config.service_principal_config:
+            return f"https://{config.storage_account_name}.{config.storage_account_suffix}"
+        
+        # Handle key-based authentication
+        return f"DefaultEndpointsProtocol=https;AccountName={config.storage_account_name};AccountKey={config.storage_account_key};EndpointSuffix={config.storage_account_suffix}"
+
+
+    def _use_service_principal(self, sp_config: ServicePrincipalConfig) -> BlobServiceClient:
+        """
+        Authenticate using a service principal and create a BlobServiceClient.
+
+        Args:
+            sp_config (ServicePrincipalConfig): The service principal configuration.
+
+        Returns:
+            BlobServiceClient: A client authenticated with the service principal.
+        """
+        credential = ClientSecretCredential(
+            tenant_id=sp_config.tenant_id,
+            client_id=sp_config.client_id,
+            client_secret=sp_config.client_secret
+        )
+        blob_service_client = BlobServiceClient(
+            account_url=f"https://{sp_config.storage_account_name}.{sp_config.storage_account_suffix}",
+            credential=credential
+        )
+        return blob_service_client
+    
+    def _validate_config(self, config: AzureBlobStorageConfig):
+        if config.service_principal_config:
+            if not all([config.service_principal_config.client_id, config.service_principal_config.client_secret, config.service_principal_config.tenant_id]):
+                raise ValueError("Incomplete service principal configuration")
+        elif not config.storage_account_key:
+            raise ValueError("Storage account key is required for key-based authentication")
+
+    def _build_account_url(self, config: AzureBlobStorageConfig) -> str:
+        return f"https://{config.storage_account_name}.{config.storage_account_suffix}"
+
         
     def upload_blob(self, container_name: str, blob_name: str, file_data: Union[str, BytesIO]) -> None:
         """
