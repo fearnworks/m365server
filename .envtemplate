@@ -10,6 +10,7 @@ AZURE_SUBSCRIPTION_ID=
 ## Use these if connecting to a cloud other than US 
 
 ## US Cloud
+# AZURE_ENDPOINT_SUFFIX=blob.core.usgovcloudapi.net/
 # AZURE_AUTHORITY_HOST=https://login.microsoftonline.us 
 
 ### Tenant Authority
