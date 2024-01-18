@@ -20,6 +20,12 @@ class BlobUploadStrategy(IBlobUploadStrategy):
                 return
 
             logger.info(f"Successfully uploaded data to blob '{blob_name}'")
-        except Exception as ex:
-            logger.error(f"Failed to upload data to blob '{blob_name}': {ex}")
+        except azure.core.exceptions.HttpResponseError as e:
+            logger.error(f"HTTP error during blob upload: {e}")
+            raise
+        except azure.core.exceptions.AzureError as e:
+            logger.error(f"Azure error during blob upload: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error during blob upload: {e}")
             raise
