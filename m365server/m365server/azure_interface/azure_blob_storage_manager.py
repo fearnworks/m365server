@@ -1,4 +1,3 @@
-import os
 from io import BytesIO
 from typing import Dict, List, Union, Optional
 from loguru import logger
@@ -8,69 +7,37 @@ from azure.core.exceptions import ResourceNotFoundError
 from azure.storage.blob import BlobServiceClient, ContainerClient
 from azure.identity import ClientSecretCredential
 
-from dataclasses import dataclass, field
-
-@dataclass
-class ServicePrincipalConfig:
-    client_id: str
-    client_secret: str
-    tenant_id: str
-
-@dataclass
-class AzureBlobStorageConfig:
-    storage_account_key: str
-    storage_account_name: str
-    storage_account_suffix: str = "core.windows.net"
-    service_principal_config: Optional[ServicePrincipalConfig] = field(default=None)
-
-
-
-def get_default_config()-> AzureBlobStorageConfig:
-        storage_account_key: str = os.getenv("STORAGE_ACCOUNT_KEY")
-        storage_account_name: str = os.getenv("STORAGE_ACCOUNT_NAME")
-        azure_suffix: str = os.getenv('AZURE_ENDPOINT_SUFFIX')
-        config = AzureBlobStorageConfig(storage_account_key=storage_account_key, storage_account_name=storage_account_name, storage_account_suffix=azure_suffix)
-        return config
-
-
+from m365server.azure_interface.configuration import AzureBlobStorageConfig, ServicePrincipalConfig
+from m365server.azure_interface.blob_client import BlobServiceClientFactory
 
 class AzureBlobStorageManager:
     """
     A class that manages interactions with Azure Blob Storage.
-    
-    This class provides methods for uploading, downloading, and deleting blobs. It also initializes a dictionary of
-    ContainerClients for each container in the storage account upon instantiation.
-    
-    Attributes:
-        connection_string (str): The connection string used to connect to Azure Blob Storage.
-        blob_service_client (BlobServiceClient): The BlobServiceClient used to interact with Azure Blob Storage.
-        container_names (List[str]): A list of names of containers in the storage account.
-        container_clients (Dict[str, ContainerClient]): A dictionary where keys are container names and values are the corresponding ContainerClients.
     """
 
     def __init__(self, config: AzureBlobStorageConfig) -> None:
+        """
+        Initialize the AzureBlobStorageManager.
+
+        Args:
+            config (AzureBlobStorageConfig): Configuration for Azure Blob Storage.
+        """
         logger.info("Initializing AzureBlobStorageManager")
-        if not (config.storage_account_key or config.service_principal_config):
-            raise ValueError("Either storage account key or service principal configuration must be provided")
+        self.blob_service_client = BlobServiceClientFactory.create_client(config)
 
-        if config.service_principal_config:
-            self.blob_service_client = self._use_service_principal(config.service_principal_config)
-        else:
-            self.connection_string = self._build_connection_string(config)
-            self.blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
-
-        # Remaining initialization logic remains unchanged...
         # Dynamically pull the list of container names from the storage account
         self.container_names: List[str] = [
             container.name for container in self.blob_service_client.list_containers()
         ]
-        logger.info(self.container_names)
+        logger.info(f"Container names: {self.container_names}")
+
         # Initialize a dictionary of ContainerClients for the specified containers
-        self.container_clients : Dict[str,ContainerClient] = {
+        self.container_clients : Dict[str, ContainerClient] = {
             container_name: self.blob_service_client.get_container_client(container_name)
             for container_name in self.container_names
         }
-        logger.info(self.container_clients)
+        logger.info(f"Container clients initialized")
+
 
     def _build_connection_string(self, config: AzureBlobStorageConfig) -> str:
         """

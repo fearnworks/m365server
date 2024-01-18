@@ -31,4 +31,4 @@ USER appuser
 WORKDIR /app/m365server
 RUN python3 -m pip install -e .
 
-ENTRYPOINT ["tini", "--","uvicorn", "m365server.main:app", "--host", "0.0.0.0", "--port", "17200", "--reload"]
+ENTRYPOINT ["tini", "--","bash", "/code/run.sh"]

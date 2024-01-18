@@ -2,7 +2,8 @@ from fastapi import APIRouter, File, UploadFile, Path, Query
 import io
 from fastapi.responses import StreamingResponse
 from fastapi.exceptions import HTTPException
-from m365server.azure_interface.azure_blob_storage_manager import AzureBlobStorageManager, get_default_config, ResourceNotFoundError
+from m365server.azure_interface.azure_blob_storage_manager import AzureBlobStorageManager,  ResourceNotFoundError
+from m365server.azure_interface.configuration import get_default_config
 from m365server.deps import get_cache
 
 from loguru import logger
