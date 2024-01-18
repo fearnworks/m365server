@@ -63,7 +63,9 @@ idna==3.6
     #   httpx
     #   requests
 isodate==0.6.1
-    # via azure-storage-blob
+    # via
+    #   azure-mgmt-network
+    #   azure-storage-blob
 loguru==0.7.2
     # via -r requirements/requirements.in
 lxml==5.1.0

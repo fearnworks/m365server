@@ -30,13 +30,14 @@ def get_default_config() -> AzureBlobStorageConfig:
     azure_suffix: str = os.getenv('AZURE_ENDPOINT_SUFFIX')
 
     # Check if service principal environment variables are set
-    if all([os.getenv("AZURE_CLIENT_ID"), os.getenv("AZURE_CLIENT_SECRET"), os.getenv("TENANT_ID")]):
+    if all([os.getenv("AZURE_CLIENT_ID"), os.getenv("AZURE_CLIENT_SECRET"), os.getenv("AZURE_TENANT_ID")]):
         logger.info("Using service principal for authentication")
         service_principal_config = ServicePrincipalConfig(
             client_id=os.getenv("AZURE_CLIENT_ID"),
             client_secret=os.getenv("AZURE_CLIENT_SECRET"),
-            tenant_id=os.getenv("TENANT_ID")
+            tenant_id=os.getenv("AZURE_TENANT_ID")
         )
+        
         return AzureBlobStorageConfig(
             storage_account_key=storage_account_key,
             storage_account_name=storage_account_name,

@@ -1,7 +1,7 @@
 import os
 
 client_thumbprint = os.getenv("PIPELINE_THUMBPRINT")
-tenant_id = os.getenv("TENANT_ID")
+AZURE_TENANT_ID = os.getenv("AZURE_TENANT_ID")
 # PIPELINE_CLIENT_SECRET_ID
 from msal import ConfidentialClientApplication, PublicClientApplication
 import requests

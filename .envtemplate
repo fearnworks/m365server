@@ -2,10 +2,21 @@
 # These environment variables are required for core functionality of the app
 #######
 # Azure Tenant ID
-TENANT_ID=
+AZURE_TENANT_ID=
 AZURE_ENDPOINT_SUFFIX=core.windows.net
 AZURE_SUBSCRIPTION_ID=
-AUTHORITY_ENDPOINT=https://login.microsoftonline.com/#yourtenantid
+
+### Alternative Authorities 
+## Use these if connecting to a cloud other than US 
+
+## US Cloud
+# AZURE_ENDPOINT_SUFFIX=blob.core.usgovcloudapi.net/
+# AZURE_AUTHORITY_HOST=https://login.microsoftonline.us 
+
+### Tenant Authority
+# AUTHORITY_ENDPOINT=https://login.microsoftonline.com/#yourtenantid
+## 
+######
 
 ## Azure Blob Storage Gen2 Warehouse 
 STORAGE_ACCOUNT_KEY=

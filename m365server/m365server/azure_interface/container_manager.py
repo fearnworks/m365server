@@ -14,7 +14,22 @@ class ContainerManager:
         except Exception as e:
             logger.error(f"Failed to initialize ContainerManager: {e}")
             raise
+        
+    def get_container_client(self, container_name: str) -> ContainerClient:
+        """
+        Retrieves the ContainerClient for the specified container name.
 
+        Args:
+            container_name (str): The name of the container.
+
+        Returns:
+            ContainerClient: The client for the specified container.
+        """
+        if container_name not in self.container_clients:
+            logger.info(f"ContainerClient for '{container_name}' not found, creating new one.")
+            self.container_clients[container_name] = self.blob_service_client.get_container_client(container_name)
+        return self.container_clients[container_name]
+    
     def list_blobs(self, container_name: str) -> List[str]:
         if container_name not in self.container_clients:
             logger.error(f'Container "{container_name}" not found')

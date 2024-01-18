@@ -12,14 +12,14 @@ default_authority_url = 'https://login.microsoftonline.com/consumers/'
 
 APPLICATION_ID = os.environ.get('APPLICATION_ID')
 CLIENT_SECRET= os.environ.get('CLIENT_SECRET')
-TENANT_ID=os.environ.get('TENANT_ID')
+AZURE_TENANT_ID=os.environ.get('AZURE_TENANT_ID')
 
 import subprocess
 import json 
 
 def get_auth_header():
     # Define the request parameters
-    url = f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token"
+    url = f"https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/v2.0/token"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {
         "client_id": APPLICATION_ID,

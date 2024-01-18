@@ -33,15 +33,15 @@ class AzureBlobStorageManager:
         self.delete_strategy = BlobOperations.BlobDeleteStrategy()
 
     def upload_blob(self, container_name: str, blob_name: str, file_data: Union[str, BytesIO]):
-        container_client = self.container_clients.get(container_name)
+        container_client = self.container_manager.get_container_client(container_name)
         self.upload_strategy.upload_blob(container_client, blob_name, file_data)
 
     def download_blob(self, container_name: str, blob_name: str) -> bytes:
-        container_client = self.container_clients.get(container_name)
+        container_client = self.container_manager.get_container_client(container_name)
         return self.download_strategy.download_blob(container_client, blob_name)
 
     def delete_blob(self, container_name: str, blob_name: str):
-        container_client = self.container_clients.get(container_name)
+        container_client = self.container_manager.get_container_client(container_name)
         self.delete_strategy.delete_blob(container_client, blob_name)
 
     def set_upload_strategy(self, new_strategy: BlobOperations.IBlobUploadStrategy):
