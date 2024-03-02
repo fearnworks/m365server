@@ -95,13 +95,13 @@ async def read_file_as_bytes(file_path: str) -> bytes:
     return file_bytes
 
 
-async def upload_blob(config: StorageConfig, file_bytes: bytes) -> httpx.Response:
+async def upload_blob(config: StorageConfig, file_bytes: bytes, timeout=60) -> httpx.Response:
     upload_url = f"{config.base_url}/blob_storage/upload_blob/{config.container_name}?blob_name={config.blob_name}"
     data = {
         "blob_name": (None, config.blob_name),
         "file": (config.blob_name, file_bytes, "application/octet-stream"),
     }
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=timeout) as client:
         response = await client.post(upload_url, files=data)
     return response
 
