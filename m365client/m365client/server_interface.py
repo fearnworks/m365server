@@ -19,10 +19,7 @@ class StorageConfig:
     
     
 @dataclass
-class StorageSheetConfig:
-    base_url: str
-    container_name: str
-    blob_name: str
+class StorageSheetConfig(StorageConfig):
     sheet_name: str
 
 
