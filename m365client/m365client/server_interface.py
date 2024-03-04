@@ -16,6 +16,14 @@ class StorageConfig:
     base_url: str
     container_name: str
     blob_name: str
+    
+    
+@dataclass
+class StorageSheetConfig:
+    base_url: str
+    container_name: str
+    blob_name: str
+    sheet_name: str
 
 
 def list_containers(base_url: str) -> dict[str, List[str]]:
@@ -86,6 +94,11 @@ async def async_download_blob(
 async def write_to_parquet(
     df: pd.DataFrame, parquet_path: str, engine: str = "pyarrow"
 ):
+    dir_name = os.path.dirname(parquet_path)
+
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+
     df.to_parquet(parquet_path, engine=engine)  # type: ignore
 
 
@@ -95,7 +108,7 @@ async def read_file_as_bytes(file_path: str) -> bytes:
     return file_bytes
 
 
-async def upload_blob(config: StorageConfig, file_bytes: bytes, timeout=60) -> httpx.Response:
+async def upload_blob(config: StorageConfig, file_bytes: bytes, timeout=120) -> httpx.Response:
     upload_url = f"{config.base_url}/blob_storage/upload_blob/{config.container_name}?blob_name={config.blob_name}"
     data = {
         "blob_name": (None, config.blob_name),
@@ -135,7 +148,7 @@ def load_all_sheets_from_blob(blob_data: io.BytesIO) -> Dict[str, pd.DataFrame]:
 
 
 async def upload_parquet(
-    df: pd.DataFrame, config: StorageConfig, artifacts_dir: str = "/artifacts"
+    df: pd.DataFrame, config: StorageConfig, artifacts_dir: str = "/artifacts", timeout=120
 ):
     # Create the artifacts directory if it doesn't exist
     os.makedirs(artifacts_dir, exist_ok=True)
