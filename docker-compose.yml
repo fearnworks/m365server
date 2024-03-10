@@ -13,8 +13,6 @@ services:
       - redis
     env_file:
       - .env
-    networks:
-      - hq-network
 
   redis:
     image: redis:alpine
@@ -24,9 +22,3 @@ services:
     - ./redis.conf:/usr/local/etc/redis/redis.conf
     - /mnt/e/redis-data/hq-sync:/data:rw
     command: redis-server /usr/local/etc/redis/redis.conf
-    networks:
-      - hq-network
-      
-networks:
-  hq-network:
-    external: true

@@ -6,3 +6,4 @@ httpx
 python-dotenv
 requests
 msal
+python-docx
