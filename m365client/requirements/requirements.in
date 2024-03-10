@@ -7,3 +7,8 @@ python-dotenv
 requests
 msal
 python-docx
+unstructured[csv, doc, docx, epub, image, md, odt, pdf, ppt, pptx, tsv, xlsx]
+transformers
+torch
+safetensors
+pypandoc
