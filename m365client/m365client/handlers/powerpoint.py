@@ -1,3 +1,5 @@
+## m365client/handlers/powerpoint.py
+
 """ Example usage 
 
 pptx_bytes = await download_powerpoint(config)
@@ -26,45 +28,26 @@ await ServerInterface.upload_blob(upload_config, embeddings_safetensors)
 
 
 from io import BytesIO
-import m365client.server_interface as ServerInterface
-import httpx
 from unstructured.partition.pptx import partition_pptx
 import tempfile
 import os
+from m365client.handlers.blob_handler import BlobFileHandler
 
 
-async def download_powerpoint(config: ServerInterface.StorageConfig) -> BytesIO:
-    try:
-        blob_url = ServerInterface.build_connection_string(
-            config.base_url,
-            ServerInterface.build_blob_download_string,
-            config.container_name,
-            config.blob_name,
+class PowerpointBlobFileHandler(BlobFileHandler):
+    def extract_text(self, file_bytes: BytesIO, filename: str) -> str:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pptx") as temp_file:
+            temp_file.write(file_bytes.getvalue())
+            temp_file_path = temp_file.name
+        
+        elements = partition_pptx(
+            filename=temp_file_path,
+            include_page_breaks=True,
+            metadata_filename=filename,
+            include_metadata=True,
         )
-        pptx_bytes = await ServerInterface.download_blob(
-            blob_url, ServerInterface.async_download_blob, httpx.AsyncClient(timeout=30.0),
-        )
-        return pptx_bytes
-    except httpx.HTTPError as http_error:
-        print(f"HTTP error occurred: {http_error}")
-    except ValueError as value_error:
-        print(f"Document format error: {value_error}")
-    except Exception as general_error:
-        print(f"An unexpected error occurred: {general_error}")
-
-def extract_text_from_powerpoint(pptx_bytes: BytesIO, filename: str):
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pptx") as temp_file:
-        temp_file.write(pptx_bytes.getvalue())
-        temp_file_path = temp_file.name
-
-    elements = partition_pptx(
-        filename=temp_file_path,
-        include_page_breaks=True,
-        metadata_filename=filename,
-        include_metadata=True,
-    )
-    text = "\n".join([element.text for element in elements])
-    
-    os.unlink(temp_file_path)  # Remove the temporary file
-    
-    return text
+        text = "\n".join([element.text for element in elements])
+        
+        os.unlink(temp_file_path)  # Remove the temporary file
+        
+        return text

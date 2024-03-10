@@ -1,3 +1,5 @@
+## m365client/handlers/bytes.py
+
 async def read_file_as_bytes(file_path: str) -> bytes:
     with open(file_path, "rb") as file:
         file_bytes = file.read()

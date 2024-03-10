@@ -1,3 +1,5 @@
+## m365client/handlers/embeddings.py
+
 import torch 
 import tempfile
 import safetensors
