@@ -6,3 +6,6 @@ from m365client.server_interface import (
 )
 
 from m365client.date_table import DateTableTransformStrategy, create_default_date_dataframe
+from m365client.schemas import StorageConfig 
+from m365client.string_utils import build_connection_string, build_blob_download_string
+from m365client.http_client import HTTPClientConfig

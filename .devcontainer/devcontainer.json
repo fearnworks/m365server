@@ -5,26 +5,27 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
 	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {
-			"version": "latest",
-			"enableNonRootDocker": "true",
-			"moby": "true"
-		},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+					"version": "latest",
+					"enableNonRootDocker": "true",
+					"moby": "true"
+				},
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/stuartleeks/dev-container-features/azure-cli-persistence:0": {},
 		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {},
 		"ghcr.io/azure/azure-dev/azd:0": {},
-		"ghcr.io/devcontainers/features/git-lfs:1": {},
 		"ghcr.io/devcontainers/features/python:1": {},
 		"ghcr.io/devcontainers-contrib/features/black:2": {},
-		"ghcr.io/devcontainers-contrib/features/curl-apt-get:1": {},
-		"ghcr.io/devcontainers-contrib/features/devcontainers-cli:1": {},
-		"ghcr.io/devcontainers-contrib/features/powerbi-visuals-tools:2": {},
 		"ghcr.io/devcontainers-contrib/features/pylint:2": {},
-		"ghcr.io/warrenbuckley/codespace-features/sqlite:1": {},
-		"ghcr.io/akhildevelops/devcontainer-features/pip:0": {},
+		// "ghcr.io/akhildevelops/devcontainer-features/pip:0": {},
 		"ghcr.io/itsmechlark/features/redis-server:1": {},
-		"ghcr.io/devcontainers/features/sshd:1": {}
+		"ghcr.io/devcontainers/features/git-lfs:1": {},
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "latest"
+		  },
+	},
+	"remoteEnv": {
+		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
 	},
 	"mounts": [
 		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind"
@@ -38,12 +39,9 @@
 				"donjayamanne.python-extension-pack",
 			]
 		},
-		"settings": {
-			"python.pythonPath": "/workspaces/m365server/venv/bin/python"
-		},
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [17200, 37200], 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "/bin/bash -c '/workspaces/m365server/scripts/setup_dev.sh && source /workspaces/m365server/venv/bin/activate'",
 	// Configure tool-specific properties.
