@@ -1,0 +1,29 @@
+name: Publish Docker Image
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push m365server Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./m365server
+        file: ./m365server/Dockerfile
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}/m365server:latest
+          ghcr.io/${{ github.repository }}/m365server:${{ github.sha }}
