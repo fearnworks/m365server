@@ -7,27 +7,6 @@ from loguru import logger
 from m365client.schemas.storage_config import StorageConfig
 import httpx 
 
-
-
-from abc import ABC, abstractmethod
-from io import BytesIO
-from typing import Callable
-from m365client.schemas import StorageConfig
-import httpx
-from loguru import logger 
-
-def build_blob_download_string(container: str, blob: str):
-    command = f"blob_storage/download_blob/{container}?blob_name={blob}"
-    logger.info(command)
-    return command
-
-
-def build_connection_string(
-    base_url: str, endpoint_strat: Callable[..., str], container: str, blob: str
-) -> str:
-    command = endpoint_strat(container, blob)
-    return f"{base_url}/{command}"
-
 async def upload_blob(config: StorageConfig, file_bytes: bytes, timeout=120) -> httpx.Response:
     upload_url = f"{config.base_url}/blob_storage/upload_blob/{config.container_name}?blob_name={config.blob_name}"
     data = {
@@ -76,38 +55,4 @@ def list_blobs(
         filtered_blobs = blobs
 
     return {"blobs": filtered_blobs}
-
-
-
-class BlobFileHandler(ABC):
-    async def download_file(self, config: StorageConfig) -> BytesIO:
-        try:
-            logger.info(f"Downloading file from: {blob_url}")
-
-            blob_url = build_connection_string(
-                config.base_url,
-                build_blob_download_string,
-                config.container_name,
-                config.blob_name,
-            )
-            file_bytes = await download_blob(
-                blob_url, async_download_blob, httpx.AsyncClient(timeout=30.0),
-
-            )
-            logger.info(f"File downloaded successfully: {config.blob_name}")
-
-            return file_bytes
-        except httpx.HTTPError as http_error:
-            logger.error(f"HTTP error occurred: {http_error}")
-        except ValueError as value_error:
-            logger.error(f"File format error: {value_error}")
-        except Exception as general_error:
-            logger.error(f"An unexpected error occurred: {general_error}")
-    
-    @abstractmethod
-    def extract_text(self, file_bytes: BytesIO) -> str:
-        pass
-
-
-
 

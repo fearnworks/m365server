@@ -1,6 +1,7 @@
 ## m365client.handlers.docx.py
 
 from m365client.handlers import BlobFileHandler
+
 from io import BytesIO
 
 import httpx

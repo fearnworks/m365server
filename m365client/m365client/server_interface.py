@@ -8,6 +8,7 @@ from typing import Callable, List, Dict
 import os
 
 ### Backwards compat
+
 from m365client.handlers import *
 
 load_dotenv(find_dotenv())
