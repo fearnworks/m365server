@@ -4,7 +4,8 @@ import os
 import pandas as pd 
 from loguru import logger 
 from m365client.schemas.storage_config import StorageConfig
-from m365client.handlers import upload_blob, read_file_as_bytes
+from m365client.handlers.blob_handler import upload_blob
+from m365client.handlers.bytes import  read_file_as_bytes
 
 def filter_parquet_part_files(file_names):
     logger.info(file_names)

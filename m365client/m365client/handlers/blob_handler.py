@@ -7,12 +7,9 @@ from loguru import logger
 from m365client.schemas.storage_config import StorageConfig
 import httpx 
 
-
-
 from abc import ABC, abstractmethod
 from io import BytesIO
 from typing import Callable
-from m365client.schemas import StorageConfig
 import httpx
 from loguru import logger 
 
@@ -76,8 +73,6 @@ def list_blobs(
         filtered_blobs = blobs
 
     return {"blobs": filtered_blobs}
-
-
 
 class BlobFileHandler(ABC):
     async def download_file(self, config: StorageConfig) -> BytesIO:
