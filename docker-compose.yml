@@ -1,7 +1,7 @@
 services:
   m365server:
-    build: 
-      context: ./m365server
+    build:
+      context: .
       dockerfile: Dockerfile
     container_name: m365server
     ports:
