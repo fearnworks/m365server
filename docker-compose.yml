@@ -1,32 +1,24 @@
 services:
   m365server:
-    build: 
-      context: ./m365server
+    build:
+      context: .
       dockerfile: Dockerfile
-    container_name: m365-server
+    container_name: m365server
     ports:
-      - 17200:17200
-      - 5678:5678
+      - "${M365_SERVER_PORT}:${M365_SERVER_PORT}"
     volumes:
       - ./m365server:/code
+      - ./m365server/config:/app/config
     depends_on:
       - redis
     env_file:
       - .env
-    networks:
-      - hq-network
 
   redis:
     image: redis:alpine
     ports:
-      - 16379:16379
+      - "${REDIS_PORT}:${REDIS_PORT}"
     volumes:
-    - ./redis.conf:/usr/local/etc/redis/redis.conf
-    - /mnt/e/redis-data/hq-sync:/data:rw
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - "${REDIS_DATA_DIR}:/data:rw"
     command: redis-server /usr/local/etc/redis/redis.conf
-    networks:
-      - hq-network
-      
-networks:
-  hq-network:
-    external: true

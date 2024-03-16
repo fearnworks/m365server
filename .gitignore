@@ -63,3 +63,4 @@ dist/
 ai_driver/hkunlp_instructor-xl
 *.db
 sandbox.ipynb
+*pytest_cache*
