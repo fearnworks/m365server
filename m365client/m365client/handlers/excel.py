@@ -4,7 +4,7 @@ import io
 from typing import Dict 
 import pandas as pd
 from io import BytesIO
-from m365client.handlers import BlobFileHandler
+from m365client.handlers.blob_handler import BlobFileHandler
 from unstructured.partition.xlsx import partition_xlsx
 
 

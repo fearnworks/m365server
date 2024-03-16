@@ -1,6 +1,6 @@
 ## m365client/handlers/markdown.py
 from io import BytesIO
-from m365client.handlers import BlobFileHandler
+from m365client.handlers.blob_handler import BlobFileHandler
 from unstructured.partition.md import partition_md
 
 class MarkdownBlobFileHandler(BlobFileHandler):

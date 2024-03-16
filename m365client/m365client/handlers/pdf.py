@@ -1,7 +1,7 @@
 ## m365client/handlers/pdf.py
 
 from io import BytesIO
-from m365client.handlers import BlobFileHandler
+from m365client.handlers.blob_handler import BlobFileHandler
 from unstructured.partition.pdf import partition_pdf
 
 class PdfBlobFileHandler(BlobFileHandler):
