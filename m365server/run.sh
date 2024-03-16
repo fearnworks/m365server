@@ -1,3 +1,13 @@
-cd /code 
-python3 -m pip install -e .
-uvicorn m365server.main:app --host 0.0.0.0 --port 17200 --reload
+# check if environment is PRODUCTION or DEVELOPMENT
+if [ "$ENVIRONMENT" = "PRODUCTION" ]; then
+  echo "Running Production Server"
+  python3 -m pip install -e .
+  uvicorn m365server.main:app --host 0.0.0.0 --port $M365_SERVER_PORT 
+
+else
+    echo "Running Development Server"
+    uvicorn m365server.main:app --host
+    cd /code 
+    python3 -m pip install -e .
+    uvicorn m365server.main:app --host 0.0.0.0 --port $M365_SERVER_PORT --reload]
+fi
