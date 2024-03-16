@@ -31,4 +31,4 @@ USER appuser
 WORKDIR /app/m365server
 RUN python3 -m pip install -e .
 
-ENTRYPOINT ["tini", "--","bash", "/code/run.sh"]
+ENTRYPOINT ["tini", "--","bash", "run.sh"]
