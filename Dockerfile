@@ -18,7 +18,7 @@ RUN mkdir /app && \
     mkdir -p /home/appuser/.cache && \
     chown -R appuser:appuser /app /home/appuser
 
-COPY ./requirements/requirements.txt /app/requirements.txt
+COPY ./m365server/requirements/requirements.txt /app/requirements.txt
 # Set environment variables
 RUN --mount=type=cache,target=~/.cache/pip \
     pip install -r /app/requirements.txt
@@ -26,7 +26,7 @@ RUN --mount=type=cache,target=~/.cache/pip \
 # Set working directory to /app
 WORKDIR /app
 
-COPY --chown=appuser:appuser  . /app/m365server
+COPY --chown=appuser:appuser  ./m365server /app/m365server
 USER appuser
 WORKDIR /app/m365server
 RUN python3 -m pip install -e .
