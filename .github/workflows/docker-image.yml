@@ -22,7 +22,7 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: ./m365server
-        file: ./m365server/Dockerfile
+        file: Dockerfile
         push: true
         tags: |
           ghcr.io/${{ github.repository }}/m365server:latest
