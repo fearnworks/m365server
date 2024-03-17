@@ -1,34 +1,40 @@
-FROM python:3.11
-ENV PYTHONFAULTHANDLER=1
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-ENV MPLCONFIGDIR /tmp/matplotlib
+FROM python:3.11-slim
 
-RUN --mount=type=cache,target=/var/cache/apt,id=apt \
-    apt-get update && apt-get -y upgrade
-RUN apt-get update && apt-get -y install procps net-tools tini
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    MPLCONFIGDIR=/tmp/matplotlib \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    HOME=/app
 
-RUN python3 -m pip install --upgrade pip
+RUN apt-get update && apt-get -y upgrade \
+    && apt-get -y install --no-install-recommends \
+        procps \
+        net-tools \
+        tini \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create appuser
-RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
+# Create appuser and app directory
+RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser \
+    && mkdir /app \
+    && chown -R appuser:appuser /app
 
-# Create app directory and change ownership to appuser
-RUN mkdir /app && \
-    mkdir -p /home/appuser/.cache && \
-    chown -R appuser:appuser /app /home/appuser
-
-COPY ./m365server/requirements/requirements.txt /app/requirements.txt
-# Set environment variables
-RUN --mount=type=cache,target=~/.cache/pip \
-    pip install -r /app/requirements.txt
-
-# Set working directory to /app
 WORKDIR /app
 
-COPY --chown=appuser:appuser  ./m365server /app/m365server
-USER appuser
-WORKDIR /app/m365server
-RUN python3 -m pip install -e .
+# Install Python dependencies
+COPY ./m365server/requirements/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT ["tini", "--","bash", "run.sh"]
+# Copy application code
+COPY --chown=appuser:appuser ./m365server ./m365server
+
+# Switch to non-root user
+USER appuser
+
+# Install application
+WORKDIR /app/m365server
+RUN pip install --no-cache-dir -e .
+
+ENTRYPOINT ["tini", "--", "bash", "run.sh"]
