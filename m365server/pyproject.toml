@@ -1,7 +1,7 @@
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = [
-  "setuptools>=61.0",
+  "setuptools>=69.0",
   "setuptools-scm",
   "pytest",
 ]
@@ -9,7 +9,7 @@ requires = [
 [project]
 description = "M365 Server"
 name = "m365server"
-version = "0.1"
+version = "0.2"
 dynamic = ["dependencies", "optional-dependencies"]
 
 
