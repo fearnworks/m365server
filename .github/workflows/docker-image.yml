@@ -21,7 +21,7 @@ jobs:
     - name: Build and push m365server Docker image
       uses: docker/build-push-action@v4
       with:
-        context: ./m365server
+        context: .
         file: Dockerfile
         push: true
         tags: |
